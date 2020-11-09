@@ -1,30 +1,13 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 )
 
 var (
-	// ErrNilList returns if list is empty.
-	ErrNilList = errors.New("List is nil")
-	// ErrIndexList returns if index of list is out of bounds
-	ErrIndexList = errors.New("Index of list is out of bounds")
-)
-
-var (
-	menuText = `
-=========>MENU<==========
-1 - print all list.
-2 - print item
-3 - add item
-4 - remove item
-c - clear console
-q - exit
-=========================
-`
+	menuText = "\n=========>MENU<==========\n1 - print all list.\n2 - print item\n3 - add item\n4 - remove item\nc - clear console\nq - exit\n=========================\n"
 )
 
 // ListNode structure of the list node.
@@ -47,7 +30,7 @@ func InitList() *List {
 }
 
 // AddItem adds item to list from the end.
-func (l *List) AddItem(value int) error {
+func (l *List) AddItem(value int) {
 	li := &ListNode{value, nil, nil}
 	if l.head == nil {
 		l.head = li
@@ -58,16 +41,14 @@ func (l *List) AddItem(value int) error {
 	}
 	l.tail = li
 	l.len++
-
-	return nil
 }
 
 // PrintList prints all items of list.
-func (l *List) PrintList() error {
+func (l *List) PrintList() {
 	currentNode := l.head
 	if currentNode == nil {
 		fmt.Println("List is empty.")
-		return ErrNilList
+		return
 	}
 
 	list := l.head
@@ -77,18 +58,17 @@ func (l *List) PrintList() error {
 		list = list.next
 	}
 	fmt.Println()
-	return nil
 }
 
 // PrintListByIndex prints item by index (from 0 to list lenght-1).
-func (l *List) PrintListByIndex(index int) error {
+func (l *List) PrintListByIndex(index int) {
 	if l.len == 0 {
 		fmt.Println("List is empty.")
-		return ErrNilList
+		return
 	}
 	if index < 0 || index > l.len-1 {
 		fmt.Println("Index", index, "of list is out of bounds.")
-		return ErrIndexList
+		return
 	}
 
 	list := l.head
@@ -96,20 +76,19 @@ func (l *List) PrintListByIndex(index int) error {
 		list = list.next
 	}
 	fmt.Printf("Item with index %d: %+v\n", index, list.value)
-	return nil
 }
 
 // RemoveItemByIndex removes item of list with the specified index (from 0 to list lenght-1).
-func (l *List) RemoveItemByIndex(index int) error {
+func (l *List) RemoveItemByIndex(index int) {
 	// if list is empty
 	if l.len == 0 {
 		fmt.Println("List is empty.")
-		return ErrNilList
+		return
 	}
 	// if index id out of bounds
 	if index < 0 || index > l.len-1 {
 		fmt.Println("Index", index, "of list is out of bounds.")
-		return ErrIndexList
+		return
 	}
 	// list by index
 	list := l.head
@@ -120,24 +99,23 @@ func (l *List) RemoveItemByIndex(index int) error {
 	if list.previous == nil {
 		list.next.previous = nil
 		l.head = list.next
-		return nil
-	}
-	// if is last item
-	if list.next == nil {
+		l.len--
+		return
+	} else if list.next == nil { // if is last item
 		list.previous.next = nil
 		l.tail = list.previous
-		return nil
+		l.len--
+		return
+	} else { // default case
+		list.next.previous = list.previous
+		list.previous.next = list.next
+		l.len--
 	}
-	// default case
-	list.next.previous = list.previous
-	list.previous.next = list.next
-	list = nil
 
-	return nil
 }
 
 func main() {
-	list := InitList()
+	list := InitList() // Initialize list
 	menu(list)
 }
 

@@ -3,6 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
+	"os"
+	"os/exec"
 )
 
 var (
@@ -10,6 +12,19 @@ var (
 	ErrNilList = errors.New("List is nil")
 	// ErrIndexList returns if index of list is out of bounds
 	ErrIndexList = errors.New("Index of list is out of bounds")
+)
+
+var (
+	menuText = `
+=========>MENU<==========
+1 - print all list.
+2 - print item
+3 - add item
+4 - remove item
+c - clear console
+q - exit
+=========================
+`
 )
 
 // ListNode structure of the list node.
@@ -63,11 +78,6 @@ func (l *List) PrintList() error {
 	}
 	fmt.Println()
 	return nil
-}
-
-// Len returns lenght of list.
-func (l *List) Len() int {
-	return l.len
 }
 
 // PrintListByIndex prints item by index (from 0 to list lenght-1).
@@ -127,22 +137,60 @@ func (l *List) RemoveItemByIndex(index int) error {
 }
 
 func main() {
-	a := InitList()
-	a.AddItem(8)
-	a.AddItem(6)
-	a.AddItem(3)
-	a.AddItem(0)
-	a.AddItem(1)
-	a.PrintList()
-	a.RemoveItemByIndex(4)
-	a.AddItem(99)
-	a.AddItem(7)
-	a.RemoveItemByIndex(2)
-	a.PrintList()
-
+	list := InitList()
+	menu(list)
 }
 
 // menu ...
-func menu() {
+func menu(list *List) {
+	var input string
 
+	for input != "q" {
+
+		fmt.Println(menuText)
+		fmt.Print(">>> ")
+		fmt.Scan(&input)
+
+		switch input {
+
+		case "1":
+			list.PrintList()
+		case "2":
+			list.PrintListByIndex(readIndex())
+		case "3":
+			list.AddItem(readItem())
+		case "4":
+			list.RemoveItemByIndex(readIndex())
+		case "c":
+			clearConsoleWindows()
+		case "q":
+			fmt.Println("Exit...")
+		default:
+			fmt.Println("Wrong command")
+		}
+
+	}
+
+}
+
+func clearConsoleWindows() {
+	cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
+	cmd.Stdout = os.Stdout
+	cmd.Run()
+}
+
+func readIndex() int {
+	var in int
+	fmt.Print("Enter index (from 0 to lenght-1): ")
+	fmt.Scan(&in)
+
+	return in
+}
+
+func readItem() int {
+	var in int
+	fmt.Print("Enter number (default - 0): ")
+	fmt.Scan(&in)
+
+	return in
 }

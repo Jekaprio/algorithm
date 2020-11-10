@@ -30,7 +30,11 @@ func InitList() *List {
 }
 
 // AddItem adds item to list from the end.
-func (l *List) AddItem(value int) {
+func (l *List) AddItem(value int, err error) {
+	if err != nil {
+		fmt.Println("Only number!!!")
+		return
+	}
 	li := &ListNode{value, nil, nil}
 	if l.head == nil {
 		l.head = li
@@ -85,7 +89,7 @@ func (l *List) RemoveItemByIndex(index int) {
 		fmt.Println("List is empty.")
 		return
 	}
-	// if index id out of bounds
+	// if index is out of bounds
 	if index < 0 || index > l.len-1 {
 		fmt.Println("Index", index, "of list is out of bounds.")
 		return
@@ -119,7 +123,7 @@ func main() {
 	menu(list)
 }
 
-// menu ...
+// menu is the simple cli menu
 func menu(list *List) {
 	var input string
 
@@ -151,24 +155,27 @@ func menu(list *List) {
 
 }
 
+// clearConsoleWindows is like "cls" in the Windows
 func clearConsoleWindows() {
 	cmd := exec.Command("cmd", "/c", "cls") //Windows example, its tested
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
 
+//read index from console
 func readIndex() int {
 	var in int
 	fmt.Print("Enter index (from 0 to lenght-1): ")
-	fmt.Scan(&in)
-
+	if _, err := fmt.Scan(&in); err != nil {
+		return -1
+	}
 	return in
 }
 
-func readItem() int {
+func readItem() (int, error) {
 	var in int
-	fmt.Print("Enter number (default - 0): ")
-	fmt.Scan(&in)
+	fmt.Print("Enter number: ")
+	_, err := fmt.Scan(&in)
 
-	return in
+	return in, err
 }
